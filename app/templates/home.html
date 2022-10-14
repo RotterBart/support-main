@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{# import 'bootstrap/wtf.html' as wtf #}
+{% block scripts %}
+    {{ super() }}
+    {{ moment.include_moment() }}
+{% endblock %}
+
+{% block app_content %}
+<h3 style="">Задачи</h1>
+    <p>У вас {{ unexecuted }} активных задач</p>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home.css')}}">
+
+<script type="text/javascript">
+    window.confirmDelete = (function (element) {
+        var className = element.className;
+        
+        if (className.indexOf('need-to-confirm') > -1) {
+            element.className = className.replace('need-to-confirm', 'confirmed');
+            return false;
+        } else {
+            element.remove();
+        }
+});
+
+</script>
+
+<p>
+  <a class="btn btn-primary" data-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Добавить задачу</a>
+  
+</p>
+<div class="row sides">
+  <div class="col">
+    <div class="collapse multi-collapse" id="multiCollapseExample1">
+      <div class="card card-body">
+        {{ form.hidden_tag() }}
+        
+        <form action="" method="post">
+        
+            <div class="col-lg-2">
+                {{ form.task_name(placeholder='Name', size=25, class='form-control') }}
+            </div>
+            <div class="col-lg-3">
+                {{ form.task_description(placeholder='Description', size=128, class='form-control') }}
+            </div>
+        
+            <div class="col-lg-2">
+            {{ form.task_limitdate(class='form-control') }}
+            </div>
+            <div class="col-lg-2">
+            {{ form.task_executor(class='form-control') }}
+            </div>
+            <div class="col-lg-3">
+            {{ form.submit(class='btn btn-primary') }}
+            {{ form.csrf_token }}
+            </div>
+        
+        
+        </form>
+        </div>
+    </div>
+  </div>
+</div>
+        
+    <table style="margin-top: 10px;" class="table table-striped table-hover" border="1" style="border-color: black;">
+            <thead>
+                <td>Задача </td>
+                <td>Описание</td>
+                <td>Дата создания</td>
+                <td>Срок</td>
+                <td>Исполнитель</td>
+                <td>Статус (клик для исполнения)</td>
+                <td>Действия</td>
+            </thead>
+        {% for task in tasks %}
+            <tr class="
+            {% if task.task_executed and not task.task_deleted %}
+                success 
+            {% elif not task.task_executed and not task.task_deleted %} 
+                warning 
+            {% endif %} 
+            {% if task.task_deleted %} 
+                overlined 
+            {% endif %} 
+            ">
+                <td>{{ task.task_name }}</td>
+                <td>{{ task.task_description }}</td>
+                <td>{{ task.task_timestamp }}</td>{# task.task_timestamp.strftime('%d-%m-%Y %H:%M:%S') #}
+                <td>{{ task.task_limitdate }}</td>{# task.task_limitdate.strftime('%d-%m-%Y') #}
+                <td>{{ task.executor.username }}</td>
+                <td>{% if not task.task_executed and not task.task_deleted and current_user == task.executor %} 
+                        <a href="{{ url_for('execute', task_id=task.task_id, action='execute')}}"><button class="btn btn-xs btn-info">Не исполнено</button></a>
+                    {% elif task.task_executed %} 
+                        <span class='badge badge-success'>Исполнено {{ task.task_executed_timestamp.strftime('%d-%m-%Y %H:%M:%S') }}</span> 
+                        {{ task.task_execution_description }}
+                    {% endif %} 
+                </td>
+                {% if task.task_deleted == False and current_user == task.executor %}
+                <td>
+                    
+                    <a href="{{ url_for('execute', task_id=task.task_id, action='edit' )}}"><button class="btn btn-xs btn-info">Edit</button></a>
+                    
+                    <a href="{{ url_for('execute', task_id=task.task_id, action='delete')}}" onclick="return confirmDelete(this);" class="btn btn-xs need-to-confirm">
+                        <button class="btn btn-xs btn-danger maintext">✘</button><button class="btn btn-xs btn-danger confirmation">✔</button>
+                    </a>
+                </td>
+                
+                {% elif current_user == task.executor %}
+                <td><center><a href="{{ url_for('execute', task_id=task.task_id, action='restore')}}"><button title="Восстановить" class="btn btn-xs btn-danger">♻ Restore?</button></a></center></td>
+                {% else %}
+                <td><center>Нет прав</center></td>
+                {% endif %}
+
+
+            </tr>
+        {% endfor %}
+    </table>
+    
+
+{% endblock %}

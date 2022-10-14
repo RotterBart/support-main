@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{# import 'bootstrap/wtf.html' as wtf #}
+{% block counter %}{{counter}}{% endblock counter %}
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{% endblock %}
+
+{% block app_content %}
+<script src="{{ url_for('static', filename='jquery-3.4.1.min.js')}}"></script>
+
+<div class="container">
+        <p>
+        <a class="btn btn-primary" data-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Добавить человека</a>
+        
+      </p>
+      <div class="row sides container">
+        <div class="col">
+          <div class="collapse multi-collapse" id="multiCollapseExample1">
+            <div class="card card-body">
+             
+              
+              <form action="" method="post">
+                <div class="form-inline">
+                <input required style="text-transform: uppercase;" type="text" id="create_first_name" class="form-control" placeholder="Фамилия">
+                <input required style="text-transform: uppercase;" type="text" id="create_last_name" class="form-control" placeholder="Имя">
+                <input style="text-transform: uppercase;" type="text" id="create_middle_name" class="form-control" placeholder="Матьчество ;D">
+                <button id="create_btn" class="btn btn-primary">Создать</button>
+                  
+              </div>
+              
+              </form>
+              </div>
+          </div>
+        </div>
+      </div>
+</div>
+
+<div class="container">
+    <h3>Проверка физического лица (Максимум 10 записей)</h1>
+        
+            <div class="form-inline">
+
+                <input required style="text-transform: uppercase;" class="form-control" id="first_name" placeholder="Фамилия">
+                <input style="text-transform: uppercase;" class="form-control" id="last_name" placeholder="Имя">
+                <button id="person_check" class="btn btn-primary">Проверить</button>
+                
+            </div>
+            <small class="form-text text-muted">Поиск по формату Фамилия или Фамилия + Имя ILIKE '%%'</small>
+        
+        
+</div>
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>person_id</th>
+                <th>Фамилия</th>
+                <th>Имя</th>
+                <th>Отчество</th>
+                <th>user_id</th>
+                <th>enterprise</th>
+                <th>Login</th>
+            </tr>
+        </thead>
+        <tbody id="person_list">
+
+
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#person_check").click(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "/look_for_person",
+                contentType: "application/json",
+                dataType: 'json',
+                data: JSON.stringify(
+                    {
+                        "first_name" : $("#first_name").val().trim().toUpperCase(),
+                        "last_name" : $("#last_name").val().trim().toUpperCase()
+                        
+                    }
+                ),
+                success: function (result) {
+                    body = document.getElementById("person_list");
+                    body.innerHTML = "";
+                    for (person in result) {
+                        row = document.createElement("tr");
+                        console.log(result[person]);
+                        
+                        for (item in result[person]) 
+                        {
+                            
+                            
+                            var column = document.createElement("td");
+                            
+                            
+                            var text = document.createTextNode(result[person][item]);
+                            if (item == "0") {
+                                column.id = "person_id"
+                                var ahref = document.createElement("a");
+                                ahref.setAttribute("href", "/person_view/" + result[person][item])
+                                ahref.appendChild(text);
+                                column.appendChild(ahref);
+                            }
+                            else if (item == "4") {
+                                column.id = "user_id"
+                                var ahref = document.createElement("a");
+                                ahref.setAttribute("href", "/user_view/" + result[person][item])
+                                ahref.appendChild(text);
+                                column.appendChild(ahref);
+                            }
+                            else {
+                                column.appendChild(text);
+                            }
+
+                            
+                            row.appendChild(column);
+                        }
+                        body.append(row);
+                    }
+                    
+
+                }
+            });
+        });
+            
+        
+        $("#create_btn").click(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "/person_add_from_check",
+                contentType: "application/json",
+                dataType: 'json',
+                data: JSON.stringify(
+                    {
+                        "first_name" : $("#create_first_name").val().trim().toUpperCase(),
+                        "last_name" : $("#create_last_name").val().trim().toUpperCase(),
+                        "middle_name" : $("#create_middle_name").val().trim().toUpperCase(),
+                        
+                    }
+                ),
+                success: function (result) {
+                    if(result.success == true){ 
+                        alert("Добавлено");
+                        
+                        window.location.href = "/person_view/" + result.person;
+                    }
+
+                }
+            });
+        });
+
+        $('#create_btn').prop('disabled',true);
+            $('#create_last_name').keyup(function(){
+                $('#create_btn').prop('disabled', (this.value.length == 0) ? true : false);     
+            })
+            
+        $('#create_last_name').keypress(function (e) {
+            var key = e.which;
+            if(key == 13)  // the enter key code
+            {
+                $('#create_btn').click();
+                return false;  
+            }
+        });   
+        $('#create_middle_name').keypress(function (e) {
+        var key = e.which;
+        if(key == 13)  // the enter key code
+        {
+            $('#create_btn').click();
+            return false;  
+        }
+        });   
+
+
+        $('#first_name').keypress(function (e) {
+        var key = e.which;
+        if(key == 13)  // the enter key code
+        {
+            $('#person_check').click();
+            return false;  
+        }
+        });   
+        $('#last_name').keypress(function (e) {
+        var key = e.which;
+        if(key == 13)  // the enter key code
+        {
+            $('#person_check').click();
+            return false;  
+        }
+        });   
+    });
+
+    
+</script>
+{% endblock %}

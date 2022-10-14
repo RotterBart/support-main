@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block app_content %}
+<div class="container">
+    <div class="row">
+      <div class="col-md-8">
+      {{ wtf.quick_form(form) }}
+      <a href="{{url_for('vision', search=enterprise)}}">
+        <button class="btn" style="color: black; background: white; border-color: #CACACA;">
+            Назад
+        </button>
+      </a> 
+      </div>
+      
+    </div>
+    
+      <div class="row">
+        <table class="table table-bordered" border="1px">
+          {% for event in ch %}
+              <tr>
+                  <td>{{ event.event }}</td>
+                  <td>{{ event.rec_date.strftime('%d-%m-%Y %H:%M:%S') }} by {{ event.chauthor.username }}</td>
+              </tr>
+          {% endfor %}
+          </table>
+      </div>
+</div>
+    
+{% endblock %}
+

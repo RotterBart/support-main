@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block app_content %}
+<div class="container">
+    <div class="row">
+            
+            <div class="col-md-4">
+                {{ wtf.quick_form(form)}}
+            <a href="{{url_for('vision', search=form.enterprise.data)}}">
+                <button class="btn" style="color: black; background: white; border-color: #CACACA;">
+                    Cancel
+                </button>
+            </a>
+            </div>
+
+            <div class="col-md-4"></div>
+        </div>
+    
+</div>
+    
+{% endblock %}
+

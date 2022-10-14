@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+
+{% block app_content %}
+    <script src="{{ url_for('static', filename='jquery-3.4.1.min.js')}}"></script> 
+    <script src="{{ url_for('static', filename='jquery.dataTables.js')}}"></script>
+    <script src="{{ url_for('static', filename='jquery.dataTables.yadcf.js')}}"></script>
+    
+    <link href="{{ url_for('static', filename='jquery.dataTables2.css')}}" rel="stylesheet"/>
+    <script src="{{ url_for('static', filename='jquery-ui.js')}}"></script>
+    <link href="{{ url_for('static', filename='jquery-ui.css')}}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='buttons.dataTables.min.css')}}" rel="stylesheet"/>
+
+    <script src="{{ url_for('static', filename='dataTables.buttons.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='buttons.flash.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='jszip.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='pdfmake.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='vfs_fonts.js')}}"></script>
+    <script src="{{ url_for('static', filename='buttons.html5.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='buttons.print.min.js')}}"></script>
+
+    <div>
+        <form action="" method="post">
+            <div class="row">
+                {{ form.hidden_tag() }}
+                <div class="form-group green-border-focus">
+                    {{ form.report_body(class='md-textarea form-control') }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-xs-3 md-form ">
+                    {{ form.date(class='form-control datepickerin') }}
+                </div>
+                <div class="col-lg-3 col-md-3 col-xs-3 md-form">
+                    {{ form.submit(class='btn btn-info') }}
+                </div>
+            </div>
+            {{ form.csrf_token }}
+        </form>
+    </div>
+
+    
+    <div class="row" style="padding-top: 20px;">
+        <table id="reporttable" class="table table-hover">
+            <thead>
+                <th>Пользователь</th>
+                <th>Дата</th>
+                <th>Текст</th>
+            </thead>
+            <tbody>
+        {% for report in reports %}
+            <tr>
+                <td>{{ report.reporter.username }}</td>
+                <td>{{ report.date.strftime("%d.%m.%Y") }}</td>
+                <td>{{ report.report_body }}</td>
+            </tr>
+        {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+<script type="text/javascript">
+    var rtable = $('#reporttable').dataTable({
+        "order": [[ 1, "desc" ]],
+        dom: 'Bfrtip',
+        bom:true,
+        buttons: [
+            {
+            extend: 'excelHtml5',
+            title: 'ОтчетXLS',
+            charset: 'UTF-8',
+            
+        }
+        ],
+        'language' : {
+          "processing": "Подождите...",
+          "search": "Поиск:",
+          "lengthMenu": "Показать _MENU_ записей",
+          "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
+          "infoEmpty": "Записи с 0 до 0 из 0 записей",
+          "infoFiltered": "(отфильтровано из _MAX_ записей)",
+          "infoPostFix": "",
+          "loadingRecords": "Загрузка записей...",
+          "zeroRecords": "Записи отсутствуют.",
+          "emptyTable": "В таблице отсутствуют данные",
+          "paginate": {
+            "first": "Первая",
+            "previous": "Предыдущая",
+            "next": "Следующая",
+            "last": "Последняя"
+          },
+          "aria": {
+            "sortAscending": ": активировать для сортировки столбца по возрастанию",
+            "sortDescending": ": активировать для сортировки столбца по убыванию"
+          }
+        }
+        
+        
+    }).yadcf([
+        {column_number : 0, filter_default_label: ['Выбрать']},
+        {column_number : 1, filter_type: "range_date", 
+            filter_default_label: ['от', 'до']
+        },
+        
+    ]);
+    
+        // Data Picker Initialization
+    $('.datepickerin').pickadate();
+    
+
+    
+</script>
+
+
+{% endblock %}

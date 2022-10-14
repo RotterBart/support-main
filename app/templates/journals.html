@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+<script src="{{ url_for('static', filename='jquery-3.4.1.min.js')}}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/select2.min.css')}}">
+
+<div class="container">
+    для поиска "Аппарат акима Северо-Казахстанской области" использовать "облакимат"
+    <div class="row">
+        <select style="width: 500px;" class="enterprises"></select>
+        <button id="select_enterprise" class="btn btn-info">GET</button>
+    </div>
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>Template</th>
+                    <th>Update</th>
+                </tr>
+            </thead>
+            <tbody id="journals">
+
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+
+<script src="{{ url_for('static', filename='js/select2.min.js')}}"></script>
+
+<script>
+    
+    $('.enterprises').select2({
+        ajax: {
+            url: '/get_enterprises',
+            dataType: 'json'
+            
+        }
+    });
+
+    $('#select_enterprise').click(function (e) {
+        // e.preventDefault();
+        enterprise = $('.enterprises').find(':selected').val();
+        $.ajax({
+            type: 'POST',
+            url: '/get_journals/' + enterprise,
+            contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+
+            success: function (result) {
+                var data = result.data;
+                var journals = document.getElementById('journals');
+                journals.innerHTML = "";
+                data.forEach(element => {
+                    var row = document.createElement('tr');
+                    var id = document.createElement('td');
+                    id.innerText = element[0];
+
+                    var name = document.createElement('td');
+                    name.innerText = element[1]['Year'] + ' ' + element[1]['Name'];
+                    var value = document.createElement('td');
+                    var value_input = document.createElement('input');
+                    value_input.type = "number";
+
+                    value_input.value = element[1]['Value'];
+                    value.append(value_input);
+
+
+                    var template = document.createElement('td');
+                    template.innerText = element[1]['Template'];
+
+                    var update = document.createElement('button');
+                    update.id = "update-" + element[0];
+                    update.textContent = "Обновить";
+                    update.className = "btn btn-info";
+                    update.onclick = function () {
+                        $.ajax({
+                            type: "POST",
+                            url: "/update_journals",
+                            contentType: "application/json",
+                            dataType: 'json',
+                            data: JSON.stringify({
+                                id: element[
+                                    0], // < note use of 'this' here
+                                value: value_input.value,
+                                enterprise: $('.enterprises').find(
+                                    ':selected').val()
+                            }),
+                            success: function (result) {
+
+                                $('#select_enterprise').click();
+                            },
+                            error: function (result) {
+                                alert('error');
+                            }
+                        });
+                    };
+                    row.append(id);
+                    row.append(name);
+                    row.append(value);
+                    row.append(template);
+                    row.append(update);
+                    journals.append(row);
+                });
+            }
+        })
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block counter %}{{counter}}{% endblock counter %}
+{% block app_content %}
+<script src="{{ url_for('static', filename='jquery-3.4.1.min.js')}}"></script> 
+<script src="{{ url_for('static', filename='jquery.dataTables.js')}}"></script>
+<link href="{{ url_for('static', filename='jquery.dataTables.css')}}" rel="stylesheet"/>
+
+<div class="container">
+    <div class="row">
+    <div class="col-md-4">
+    {# wtf.quick_form(form)#}
+    </div>
+            <div class="col-md-4" style="padding-bottom: 20px">
+              <a border="1" data-toggle="modal" href="#add_ccontact">
+              <button class="btn btn-info btn-xs">Добавить контакт</button></a>
+              <a border="1" data-toggle="modal" href="#add_department">
+              <button class="btn btn-info btn-xs">Добавить структуру</button></a>
+            </div>
+            <table id="ContactsTable" class="display" cellspacing="0" width="100%">
+                <thead class="">
+                <tr>
+                    <th scope="col">Структура</th>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Контакт</th>
+                    <th scope="col">Примечание</th>
+                    <th scope="col">etc</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                    {% for ci in data %}
+                        
+                         <tr class="table table-hover">
+                            
+                            <td>{{ci.department.name}}</td>
+                            <td>{{ci.name}}</td>
+                            <td>{{ci.phone}}</td>
+                            <td>{{ci.desc}}</td>
+                            <td><a href="{{ url_for('cc_item', id= ci.ci_id ) }}"><span class="badge badge-info">Edit<span></a></td>
+                             
+                        </tr>
+                       
+                     
+                       
+                    {% endfor %}
+                </tbody>
+            </table>
+
+
+
+            <div id="add_ccontact" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title">Добавить контакт</h4>
+                    </div>
+                    <div class="modal-body">
+                        
+                            {{ wtf.quick_form(form)}}
+                        
+                    </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                        
+                    </div>
+                </div>
+            </div>
+            <div id="add_department" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title">Добавить структуру</h4>
+                    </div>
+                    <div class="modal-body">
+                        
+                            {{ wtf.quick_form(form2)}}
+                        
+                    </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                        
+                    </div>
+                </div>
+            </div>
+            
+    </div>
+</div>
+        
+    </div>
+    
+</div>
+
+
+<script type="text/javascript">
+    var table = $('#ContactsTable').DataTable({
+    "lengthMenu": [ 10, 15, 20, 25, 50, 75, 100 ],
+    "pageLength": 15,
+    'language': {
+        
+        "processing": "Подождите...",
+        "search": "Поиск:",
+        "lengthMenu": "Показать _MENU_ записей",
+        "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
+        "infoEmpty": "Записи с 0 до 0 из 0 записей",
+        "infoFiltered": "(отфильтровано из _MAX_ записей)",
+        "infoPostFix": "",
+        "loadingRecords": "Загрузка записей...",
+        "zeroRecords": "Записи отсутствуют.",
+        "emptyTable": "В таблице отсутствуют данные",
+        "paginate": {
+        "first": "Первая",
+        "previous": "Предыдущая",
+        "next": "Следующая",
+        "last": "Последняя"
+                },
+    "aria": {
+        "sortAscending": ": активировать для сортировки столбца по возрастанию",
+        "sortDescending": ": активировать для сортировки столбца по убыванию"
+        }}
+});
+
+
+</script>
+
+    
+{% endblock %}

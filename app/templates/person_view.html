@@ -1,0 +1,180 @@
+
+{% extends 'base.html' %}
+{# import 'bootstrap/wtf.html' as wtf #}
+
+{% block app_content %}
+<script src="{{ url_for('static', filename='jquery-3.4.1.min.js')}}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/select2.min.css')}}">
+<h3>Информация о физическом лице</h3>
+<p> Person:</p>
+<p id="person_id">{{person[0]}}</p>
+<table id="person_table" class="table">
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>first_name</th>
+            <th>last_name</th>
+            <th>middle_name</th>
+            <th>rec_date</th>
+            <th>del_rec</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            {% for p in person %}
+            
+            <td>{{p}}</td>
+            
+            
+            {% endfor %}
+            
+        </tr>
+    </tbody>
+</table>
+
+<br><br>
+<p>User:
+    <table id="users_table" class="table">
+        <thead>
+            <tr>
+                <th>user_id</th>
+                <th>parent_id (enterprise)</th>
+                <th>login</th>
+                <th>xml_data</th>
+                <th>rec_date</th>
+                <th>del_rec</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            {% if user %}
+            {% for us in user %}
+            <tr>
+                {% for u in us %}
+                <td>{{u}}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            
+            {% endif %}
+            
+            
+        </tbody>
+    </table>
+    <br>
+    <p>Employee:</p>
+    {% if employee %}
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>Workplace</th>
+                <th>Person</th>
+                <th>Enterprise</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for emp in employee %}
+            
+            <tr>
+                {% for e in emp %}
+                <td>{{ e }}</td>
+                {% endfor %}
+                
+                {% if not user %}
+                
+                
+                <td><a
+                    href="{{ url_for('add_current_user', person_id=person[0], workplace=emp[1], enterprise=emp[3], employee=emp[0] )}}"><button
+                    class="btn btn-info">Добавить пользователя</button></a></td>
+                    {% else %}
+                    <td>Местокнопки ЕслиНетПольз</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                
+            </table>
+            {% endif %}
+            
+            <div class="row">
+            
+            {% if not employee %}
+            <p>Для создания рабочего места и привязки сотрудника выберите организацию и должность:</p>
+        <select style="width: 500px;" class="enterprises"></select>
+        <select style="width: 300px;" class="jobtitles"></select>
+        <button id="sel" class="btn-success" style="border-radius: 15px;">Создать</button>
+                
+            {% endif %}
+        </div>
+            
+            
+            
+            <script>
+                //$(document).ready(function() {
+                   //var data;
+                    //$.ajax({
+                    //    type: 'GET',
+                    //    url: '/get_enterprises',
+                    //    contentType: "application/json",
+                        //success: function(result){
+                            //var ents = result['enterprises'];
+                            //data = ents;
+                            
+                            // for (let index = 0; index < ents.length; index++) {
+                            //     var row = ents[index];
+                            //     //console.log(row);
+                            //     opt = document.createElement("option");
+                            //     opt.value = row[0];
+                            //     opt.text = row[1];
+                            //     //$(".enterprises").append(opt);
+                                
+                            // }
+                            
+                            
+                        //}
+                    //});
+                //});
+                $('#sel').click(function (e) {
+                    e.preventDefault();
+                    enterprise = $('.enterprises').find(':selected').val();
+                    $.ajax({
+                        type: 'POST',
+                        url: '/add_employee',
+                        contentType: "application/json;charset=UTF-8",
+                        dataType: "json",
+                        data: JSON.stringify({
+                            "enterprise" : enterprise,
+                            "person" : $("#person_id").html(),
+                            "jobtitle" : $('.jobtitles').find(':selected').val()
+                        }),
+                        success: function(result){
+                            alert("Добавлено");
+                            location.reload();
+                            
+                        }
+                    })
+                });
+    </script>
+    
+    <script src="{{ url_for('static', filename='js/select2.min.js')}}"></script>
+    
+    <script>
+        $('.enterprises').select2({
+            ajax: {
+                url: '/get_enterprises',
+                dataType: 'json'
+                // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            }
+        });
+        $('.jobtitles').select2({
+            ajax: {
+                url: '/get_jobtitles',
+                dataType: 'json'
+                // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            }
+        });
+    </script>
+    
+    
+    {% endblock %}

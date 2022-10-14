@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block app_content %}
+
+<script src="{{ url_for('static', filename='js/vue.js')}}"></script>
+<div id="app">
+    {{ message }}
+  </div>
+<div class="container">
+    <table>
+        <thead>
+            <tr>
+                <td>id</td>
+                <td>parent</td>
+                <td>name</td>
+                <td>type</td>
+                <td>xml_data</td>
+                <td>del_rec</td>
+            </tr>
+        </thead>
+        <tbody id='tablebody'>
+            {% for item in objects %}
+            <tr>
+                {# item[0], item[1], item[2]['ru-RU'], item[3], item[4], item[5] #}
+                <td id='id'>{{item[0]}}</td>
+                <td >{{item[1]}}</td>
+                <td>{{item[2]}}</td>
+                <td>{{item[3]}}</td>
+                <td>{{item[4]}}</td>
+                <td>{{item[5]}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div id='result'></div>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+          message: 'Hello Vue!'
+        }
+      })
+</script>
+{% endblock %}

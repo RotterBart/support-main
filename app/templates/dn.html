@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block counter %}{{counter}}{% endblock counter %}
+{% block app_content %}
+{% block scripts %}
+    {{ super() }}
+    {{ moment.include_moment() }}
+{% endblock %}
+<a target="_blank" href="https://10.245.12.100/ucgo_new/public/zapros-na-vypusk-sertifikata"><button style="margin-bottom: 20px;" class="btn btn-info">Переход на https://10.245.12.100</button></a>
+
+<br>
+<script src="{{ url_for('static', filename='tumsocket.js')}}"></script>
+
+<script src="{{ url_for('static', filename='jquery-3.4.1.min.js')}}"></script> 
+<script src="{{ url_for('static', filename='socket.io.js') }}"></script>
+<script type="text/javascript">
+    
+
+    
+</script>
+    <div class="row">
+        <div class="col-md-8">
+            {{ wtf.quick_form(form) }}
+        </div>
+    </div>
+    <br>
+    
+
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <button  onclick="CopyPlease()" class="btn btn-info" type="button">Copy >>></button>
+      </div>
+      <input id="copyme" type="text" value="{{text}}" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1">
+    </div>
+    
+    <div class="row">
+        <div class="container">
+            
+
+
+<p style="margin-top: 10px;"> История:</p>
+{% if current_user.is_authenticated %}
+<div class="container" style="margin-top: 10px;">
+    <table class="table table-bordered" border="1px">
+    {% for string in history %}
+        <tr>
+            <td>{{ string.dnstring }}</td>
+            <td>{{ string.rec_date.strftime('%d-%m-%Y %H:%M:%S') }} by {{ string.executor.username }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+<script type="text/javascript">
+    
+function CopyPlease() {
+  /* Get the text field */
+  var copyText = document.getElementById("copyme");
+
+  /* Select the text field */
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+  /* Copy the text inside the text field */
+  document.execCommand("copy");
+
+  /* Alert the copied text */
+  
+}
+
+
+</script>
+
+{% endblock %}

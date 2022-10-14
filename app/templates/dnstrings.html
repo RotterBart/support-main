@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{# import 'bootstrap/wtf.html' as wtf #}
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{% endblock %}
+{% block counter %}{{counter}}{% endblock counter %}
+{% block app_content %}
+<h3 style="">Строки DN</h3>
+<a href="{{ url_for('dnstrings_delete')}}">&#128465;&#65039;</a>
+    <table class="table">
+        <thead>
+            <tr class="row">
+                <th scope="col">id</th>
+                <th style="width: 75%" scope="col">Строка</th>
+                <th scope="col">Дата добавления</th>
+                <th scope="col">Дата создания</th>
+                <th scope="col">Активное</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for dn in dnstrings %}
+            <tr class="row">
+                <td><a href="{{ url_for('dnstring_view', id=dn.id) }}">{{ dn.id }}</a></td>
+                <td width="w-100" class="selector"><input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" value="{{ dn.dn }}"></td>
+                <td>{{ dn.rec_date }}</td>
+                <td>{{ dn.time_create }}</td>
+                <td>{{ dn.active }} <a href="{{ url_for('deactivate_dn', id=dn.id) }}">Х</a> </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+<script>
+$(document).on("click", ".selector" ,function(){
+    var range = document.createRange();
+    range.selectNodeContents(this);  
+    var sel = window.getSelection(); 
+    sel.removeAllRanges(); 
+    sel.addRange(range);
+});
+</script>
+    {% endblock %}

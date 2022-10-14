@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<div class="container">
+    <h3>{{ adpost.title }}</h3>
+    <p></p>
+    <p>{{ adpost.body }}</p>
+    <img src="{{ url_for('image', filename=adpost.image ) }} " width="300" height="auto">
+    <p>{{ adpost.category.name }}</p>
+
+    
+</div>
+    
+{% endblock %}

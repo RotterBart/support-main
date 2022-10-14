@@ -1,0 +1,13 @@
+it]
+Description=Gunicorn instance to serve myproject
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/home/reolitic/src
+Environment="PATH=/home/reolitic/src/venv/bin"
+ExecStart=/home/reolitic/src/gunicorn --workers 3 --bind unix:app.sock -m 007 wsgi:app
+
+[Install]
+WantedBy=multi-user.target

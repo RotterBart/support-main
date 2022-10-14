@@ -1,0 +1,9 @@
+tr.overlined {
+    text-decoration: line-through;
+    background: #F9F9F9;
+}
+
+td button {
+    margin-left: 99;
+}
+

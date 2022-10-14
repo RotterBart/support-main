@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+
+{% block app_content %}
+
+<link href="{{ url_for('static', filename='info.css') }}" rel="stylesheet" />
+<script type="text/javascript" src="{{ url_for('static', filename='info.js')}}"></script>
+
+    
+<div class="row">
+    <div class="container">
+        
+        <div class="col-lg-3">
+        <a href="{{ url_for('add_info')}}"><button class="btn btn-xs btn-info">Добавить</button></a>
+        <a href="{{ url_for('add_category')}}"><button class="btn btn-xs btn-info">Добавить категорию</button></a>
+        </div>
+        <div class="col-lg-3" style="margin-right: 250px;">
+            <br>
+            <br>
+        </div>
+        
+    </div>
+</div>   
+<div class="row">
+    <div class="container">
+        
+        <nav aria-label="...">
+          <ul class="pager">
+            <li class="previous{% if not prev_url %} disabled{% endif %}">
+              <a href="{{ prev_url or '#' }}">
+                <span aria-hidden="true">←</span> Newer </a>
+            </li>
+            <li class="next{% if not next_url %} disabled{% endif %}">
+              <a href="{{ next_url or '#' }}"> Older <span aria-hidden="true">→</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+    </div>
+</div>
+<div class="row" style="margin-top: 18px;">
+
+    <div class = "col-xs-2 col-md-2 col-sm-2 col-lg-3 sidebar">
+                <ul class="nav nav-sidebar" style = "background: #ffffff;">
+                    <li><a href="{{url_for('info')}}">Все</a></li>
+                    {% for c in categories %}
+                        <li><a href="{{url_for('info_cat', category_id=c.id)}}">{{ c.name }}</a></li>
+                    {% endfor %}
+                    <li><a href="{{ url_for('info_deleted')}}" style="color:red;">Удаленные</a> </li>
+                </ul>
+            </div>
+
+
+    
+      
+    
+        
+      
+<div class="col-lg-9 left">
+      {% for i in ins %}
+
+    
+            
+                <button class="collapsible {% if i.deleted %} deleted {% endif %}" style="">
+                    {{ i.theme }}
+                </button>
+            
+            <div class="content" style="">
+
+            <div class="btn-group">
+                    <a href="{{ url_for('info_view', id = i.id ) }}"><button class="btn btn-xs btn-info">Просмотреть</button></a>
+                    <a href="{{ url_for('info_edit', id = i.id ) }}"><button class="btn btn-xs btn-info">Изменить</button></a>
+                    <a href="{{ url_for('info_del', id = i.id ) }}"><button class="btn btn-xs btn-info">Удалить</button></a>
+
+                </div>
+              {{ i.trouble | safe }}
+              
+              <p>{# i.category #}</p>
+            </div>
+        
+       
+
+
+
+{% endfor %}
+       </div>
+  </div> 
+</div>
+<script type="text/javascript">
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}</script>
+{% endblock %}
