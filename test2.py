@@ -4,6 +4,10 @@ from app import app, db
 from app.models import User, Post, AdPost, Category
 
 class UserModelCase(unittest.TestCase):
+    def new_func():
+    print("privet")
+
+new_func()
     def setUp(self):
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
         db.create_all()
